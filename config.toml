@@ -1,0 +1,38 @@
+[Config]
+  search_description = false
+  max_results = 10
+
+[[Rules]]
+  match = "terminal"
+  description = "Run terminal"
+  args = ['wt']
+
+[[Rules]]
+  match = "vid"
+  description = "Open D:/Videos in terminal"
+  args = ['wt', 'pwsh.exe', '-wd', 'D:/Videos/']
+
+[[Rules]]
+  match = "python"
+  description = "Run python"
+  args = ['wt', 'pwsh.exe', '-Command', 'python.exe']
+
+[[Rules]]
+  match = "explorer"
+  description = "Run Explorer"
+  args = ['explorer.exe']
+
+[[Rules]]
+  match = "C"
+  description = "Open C:/ in explorer"
+  args = ['explorer.exe', 'C:/']
+
+[[Rules]]
+  match = "firefox"
+  description = "Run Firefox"
+  args = ['firefox.exe', 'https://github.com/']
+
+[[Rules]]
+  match = "GH"
+  description = "Open github.com in firefox"
+  args = ['firefox.exe', 'https://github.com/']
