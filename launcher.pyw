@@ -147,15 +147,23 @@ class UI(tk.Tk):
 
         self.input_var = tk.StringVar(self)
         self.input = ttk.Entry(frm, textvariable=self.input_var)
-        self.input.pack(anchor=tk.N, fill=tk.X, expand=True)
+        self.input.pack(fill=tk.X, side=tk.TOP)
         self.input.focus()
         self.input_var.trace_add("write", lambda a, b, c: self.update_list())
-        self.input.bind("<Key>", self.on_input_key)  # type: ignore
+        self.input.bind("<Return>", self.execute_rule)  # type: ignore
+        self.input.bind("<Escape>", lambda x: self.quit())
 
-        self.list_active: int = 0
+        self.scrollbar = ttk.Scrollbar(frm)
+        self.scrollbar.pack(fill=tk.BOTH, side=tk.RIGHT)
+
         self.list_var = tk.Variable()
         self.list = tk.Listbox(frm, listvariable=self.list_var)
-        self.list.pack(anchor=tk.CENTER, fill=tk.BOTH, expand=True)
+        self.list.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
+        self.list.config(yscrollcommand=self.scrollbar.set)
+        self.list.bind("<Return>", self.execute_rule)  # type: ignore
+        self.list.bind("<Double-Button-1>", self.execute_rule)  # type: ignore
+
+        self.list.bind("<Escape>", lambda x: self.quit())
 
         self.config = config
         self.update_list()
@@ -163,31 +171,16 @@ class UI(tk.Tk):
     def start(self) -> None:
         self.mainloop()
 
-    def on_input_key(self, event) -> None | str:  # type: ignore
-        key = event.keysym  # type: ignore
-        cur = self.list_active
-        max = len(self.list_var.get())  # type: ignore
+    def execute_rule(self, event) -> None:  # type: ignore
+        try:
+            n: int = self.list.curselection()[0]  # type: ignore
+        except Exception:
+            return
 
-        if key == "Escape":
-            self.quit()
-        elif key == "Up" and cur > 0:
-            self.set_active(cur - 1)
-        elif key == "Down" and cur < max - 1:
-            self.set_active(cur + 1)
-        elif key == "Return" and len(self.rules) > 0:
-            self.rules[cur].execute()
-            self.config.write()
-            self.withdraw()  # hide before quit to prevent focus loss for executed program
-            self.quit()
-        elif key == "Tab":
-            return "break"  # to do nothing when pressing tab
-
-    def set_active(self, new: int):
-        self.list.selection_clear(self.list_active)
-        self.list.selection_set(new)
-        self.list.activate(new)
-
-        self.list_active = new
+        self.rules[n].execute()
+        self.config.write()
+        self.withdraw()  # hide before quit to prevent focus loss for executed program
+        self.quit()
 
     def update_list(self) -> None:
         self.rules = self.config.filter_rules(self.input_var.get())
@@ -197,7 +190,9 @@ class UI(tk.Tk):
         ]
         self.list_var.set(new_list)  # type: ignore
 
-        self.set_active(0)
+        self.list.selection_clear(0, 99999)
+        self.list.selection_set(0)
+        self.list.activate(0)
 
 
 def run():
