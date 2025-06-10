@@ -11,7 +11,6 @@
   match = "localappdata"
   description = "Open LocalAppData"
   args = ['wt', 'pwsh.exe', '-wd', '%localappdata%']
-  last_use = 2025-06-10T19:20:07
 
 [[Rules]]
   match = "vid"
@@ -36,9 +35,9 @@
 [[Rules]]
   match = "firefox"
   description = "Run Firefox"
-  args = ['firefox.exe', 'https://github.com/']
+  args = ['C:/Program Files/Mozilla Firefox/firefox.exe']
 
 [[Rules]]
   match = "GH"
   description = "Open github.com in firefox"
-  args = ['firefox.exe', 'https://github.com/']
+  args = ['C:/Program Files/Mozilla Firefox/firefox.exe', 'https://github.com/']

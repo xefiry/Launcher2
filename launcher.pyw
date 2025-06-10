@@ -126,8 +126,12 @@ class Rule:
             return None
 
     def execute(self) -> None:
-        self.last_use = time.strftime("%Y-%m-%dT%H:%M:%S")
-        subprocess.Popen(self.args)
+        try:
+            subprocess.Popen(self.args)
+            self.last_use = time.strftime("%Y-%m-%dT%H:%M:%S")
+        except Exception as e:
+            msg.showerror("Error opening file", str(e))  # type: ignore
+            exit(-1)
 
 
 class UI(tk.Tk):
