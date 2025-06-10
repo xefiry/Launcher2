@@ -4,6 +4,6 @@ A fast configurable launcher written in Python.
 
 Rewrite of <https://github.com/xefiry/Launcher>
 
-## Status
+## ToDo
 
-Work In Progress
+- Add cwd in Rule
