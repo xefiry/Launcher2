@@ -26,6 +26,7 @@ class UI(tk.Tk):
         self.list = tk.Listbox(frm, listvariable=self.list_var)
         self.list.pack(anchor=tk.CENTER, fill=tk.BOTH, expand=True)
         self.list.selection_set(0)
+        self.list.activate(0)
 
     def start(self) -> None:
         self.mainloop()
@@ -39,10 +40,12 @@ class UI(tk.Tk):
             if cur > 0:
                 self.list.selection_clear(cur)
                 self.list.selection_set(cur - 1)
+                self.list.activate(cur - 1)
         elif key == "Down":
             if cur < max - 1:
                 self.list.selection_clear(cur)
                 self.list.selection_set(cur + 1)
+                self.list.activate(cur + 1)
         elif key == "Escape":
             self.quit()
         else:
