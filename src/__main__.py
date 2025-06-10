@@ -6,8 +6,6 @@ CONFIG_FILE = "config.toml"
 
 def run():
     conf = Config(CONFIG_FILE)
-    print(conf)
-    # conf.write()
 
     ui = UI(conf)
     ui.mainloop()
