@@ -8,5 +8,5 @@ Rewrite of <https://github.com/xefiry/Launcher>
 
 - [ ] Add cwd in Rule
 - [ ] Improve UI
-- [ ] Add scroll bar to rules list
+- [x] Add scroll bar to rules list
 - [ ] Use search_description & max_results config (or remove them)
