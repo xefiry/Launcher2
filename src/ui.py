@@ -5,7 +5,7 @@ from src.configuration import Config
 
 
 class UI(tk.Tk):
-    def __init__(self, config: 'Config') -> None:
+    def __init__(self, config: "Config") -> None:
         tk.Tk.__init__(self)
 
         self.title("Launcher")
@@ -19,13 +19,16 @@ class UI(tk.Tk):
         self.input = ttk.Entry(frm, textvariable=self.input_var)
         self.input.pack(anchor=tk.N, fill=tk.X, expand=True)
         self.input.focus()
+        self.input_var.trace_add("write", lambda a, b, c: self.update_list())
         self.input.bind("<Key>", self.on_input_key)  # type: ignore
 
         self.list_active: int = 0
         self.list_var = tk.Variable()
         self.list = tk.Listbox(frm, listvariable=self.list_var)
         self.list.pack(anchor=tk.CENTER, fill=tk.BOTH, expand=True)
-        self.set_active(0)
+
+        self.config = config
+        self.update_list()
 
     def start(self) -> None:
         self.mainloop()
@@ -41,12 +44,13 @@ class UI(tk.Tk):
             self.set_active(cur - 1)
         elif key == "Down" and cur < max - 1:
             self.set_active(cur + 1)
-        elif key == "Return":
-            print(cur)
+        elif key == "Return" and len(self.rules) > 0:
+            self.rules[cur].execute()
+            self.config.write()
+            self.withdraw()  # hide before quit to prevent focus loss for executed program
+            self.quit()
         elif key == "Tab":
             return "break"  # to do nothing when pressing tab
-        elif event.char != "":  # type: ignore
-            self.update_list()
 
     def set_active(self, new: int):
         self.list.selection_clear(self.list_active)
@@ -56,4 +60,9 @@ class UI(tk.Tk):
         self.list_active = new
 
     def update_list(self) -> None:
-        print("update_list : ToDo")
+        self.rules = self.config.filter_rules(self.input_var.get())
+
+        new_list: list[str] = [f"{rule.match} - {rule.description}" for rule in self.rules]
+        self.list_var.set(new_list)  # type: ignore
+
+        self.set_active(0)

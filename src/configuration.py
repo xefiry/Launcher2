@@ -47,6 +47,21 @@ class Config:
         with open(self.file_path, "w") as f:
             f.write(self.as_toml())
 
+    def filter_rules(self, input: str) -> list["Rule"]:
+        result: list["Rule"] = []
+
+        # if input is empty, we return all the rules
+        if input == "":
+            result = self.rules
+        else:
+            for rule in self.rules:
+                if rule.check(input) is not None:
+                    result.append(rule)
+
+        result.sort(reverse=True)
+
+        return result
+
 
 class Rule:
     def __init__(
@@ -85,13 +100,18 @@ class Rule:
         return result
 
     def __eq__(self, value: object) -> bool:
-        print("__eq__called")
         if type(value) is Rule:
             return (
                 self.match == value.match
                 and self.description == value.description
                 and self.args == value.args
             )
+        else:
+            return False
+
+    def __lt__(self, value: object) -> bool:
+        if type(value) is Rule:
+            return self.last_use < value.last_use
         else:
             return False
 
