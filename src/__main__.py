@@ -9,7 +9,7 @@ def run():
     print(conf)
     # conf.write()
 
-    ui = UI()
+    ui = UI(conf)
     ui.mainloop()
 
 
