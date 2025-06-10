@@ -8,6 +8,12 @@
   args = ['wt']
 
 [[Rules]]
+  match = "localappdata"
+  description = "Open LocalAppData"
+  args = ['wt', 'pwsh.exe', '-wd', '%localappdata%']
+  last_use = 2025-06-10T19:20:07
+
+[[Rules]]
   match = "vid"
   description = "Open D:/Videos in terminal"
   args = ['wt', 'pwsh.exe', '-wd', 'D:/Videos/']

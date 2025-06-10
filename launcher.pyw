@@ -58,11 +58,9 @@ class Config:
 
         # if input is empty, we return all the rules
         if input == "":
-            result = self.rules
+            result = [rule for rule in self.rules]
         else:
-            for rule in self.rules:
-                if rule.check(input) is not None:
-                    result.append(rule)
+            result = [rule for rule in self.rules if rule.check(input) is not None]
 
         result.sort(reverse=True)
 
