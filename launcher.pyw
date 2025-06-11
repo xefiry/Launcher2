@@ -152,8 +152,10 @@ class UI(tk.Tk):
         self.input.pack(fill=tk.X, side=tk.TOP)
         self.input.focus()
         self.input_var.trace_add("write", lambda a, b, c: self.update_list())
-        self.input.bind("<Return>", self.execute_rule)  # type: ignore
+        self.input.bind("<Return>", lambda x: self.execute_rule())
         self.input.bind("<Escape>", lambda x: self.quit())
+        self.input.bind("<Up>", lambda x: self.list.focus())
+        self.input.bind("<Down>", lambda x: self.list.focus())
 
         self.scrollbar = ttk.Scrollbar(frm)
         self.scrollbar.pack(fill=tk.BOTH, side=tk.RIGHT)
@@ -162,8 +164,8 @@ class UI(tk.Tk):
         self.list = tk.Listbox(frm, listvariable=self.list_var)
         self.list.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
         self.list.config(yscrollcommand=self.scrollbar.set)
-        self.list.bind("<Return>", self.execute_rule)  # type: ignore
-        self.list.bind("<Double-Button-1>", self.execute_rule)  # type: ignore
+        self.list.bind("<Return>", lambda x: self.execute_rule())
+        self.list.bind("<Double-Button-1>", lambda x: self.execute_rule())
 
         self.list.bind("<Escape>", lambda x: self.quit())
 
@@ -173,7 +175,7 @@ class UI(tk.Tk):
     def start(self) -> None:
         self.mainloop()
 
-    def execute_rule(self, event) -> None:  # type: ignore
+    def execute_rule(self) -> None:
         try:
             n: int = self.list.curselection()[0]  # type: ignore
         except Exception:
