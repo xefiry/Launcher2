@@ -130,7 +130,7 @@ class Rule:
     def execute(self) -> None:
         try:
             subprocess.Popen(self.args)
-            self.last_use = time.strftime("%Y-%m-%dT%H:%M:%S")
+            self.last_use = time.strftime("%Y-%m-%d %H:%M:%S")
         except Exception as e:
             msg.showerror("Error opening file", str(e))  # type: ignore
             exit(-1)
