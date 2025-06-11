@@ -92,11 +92,13 @@ class Rule:
         return f"Rule('{self.match}' - '{self.description}' - {self.args})"
 
     def as_toml(self) -> str:
+        args = '", "'.join(self.args)
+        args = args.replace("\\", "\\\\")
         result = f"""
 [[Rules]]
   match = "{self.match}"
   description = "{self.description}"
-  args = {self.args}
+  args = ["{args}"]
 """
         if self.last_use != "":
             result += f"""  last_use = {self.last_use}
