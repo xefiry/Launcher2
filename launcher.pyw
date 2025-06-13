@@ -29,7 +29,7 @@ class Config:
         self.max_results: int = data["Config"]["max_results"]
         self.rules: list[Rule] = []
 
-        for d in data["Rules"]:
+        for d in data["Rule"]:
             self.rules.append(Rule.from_dict(d))
 
     def __repr__(self) -> str:
@@ -46,7 +46,7 @@ class Config:
                 "search_description": self.search_description,
                 "max_results": self.max_results,
             },
-            "Rules": [rule.__dict__ for rule in self.rules],
+            "Rule": [rule.__dict__ for rule in self.rules],
         }
 
     def write(self) -> None:
