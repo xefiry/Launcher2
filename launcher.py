@@ -68,9 +68,7 @@ class Config:
 
 
 class Rule:
-    def __init__(
-        self, d: dict[str, str]
-    ) -> None:
+    def __init__(self, d: dict[str, str]) -> None:
         self.match: str = d["match"]
         self.description: str = d["description"]
         self.args: list[str] = list[str](d["args"])
@@ -80,10 +78,11 @@ class Rule:
             self.last_use = dt.datetime.fromisoformat(str(d["last_use"]))
 
     def __repr__(self) -> str:
+        mda: str = f"{self.match}' - '{self.description}' - {self.args}"
         cwd: str = f" - '{self.cwd}'" if hasattr(self, "cwd") else ""
         last_use: str = f" - '{self.last_use}'" if hasattr(self, "last_use") else ""
 
-        return f"Rule('{self.match}' - '{self.description}' - {self.args}{cwd}{last_use})"
+        return f"Rule('{mda}{cwd}{last_use})"
 
     def __eq__(self, value: object) -> bool:
         if type(value) is Rule:
@@ -97,8 +96,9 @@ class Rule:
 
     def __lt__(self, value: object) -> bool:
         if type(value) is Rule:
-            a = self.last_use if hasattr(self, "last_use") else dt.datetime.fromtimestamp(0)
-            b = value.last_use if hasattr(value, "last_use") else dt.datetime.fromtimestamp(0)
+            ts0 = dt.datetime.fromtimestamp(0)
+            a = self.last_use if hasattr(self, "last_use") else ts0
+            b = value.last_use if hasattr(value, "last_use") else ts0
             return a < b
         else:
             return False
