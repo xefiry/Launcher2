@@ -30,7 +30,7 @@ class Config:
         self.rules: list[Rule] = []
 
         for d in data["Rule"]:
-            self.rules.append(Rule.from_dict(d))
+            self.rules.append(Rule(d))
 
     def __repr__(self) -> str:
         result: str = ""
@@ -69,41 +69,21 @@ class Config:
 
 class Rule:
     def __init__(
-        self, match: str, description: str, args: list[str], last_use: dt.datetime
+        self, d: dict[str, str]
     ) -> None:
-        self.match: str = match
-        self.description: str = description
-        self.args: list[str] = args
-        self.last_use: dt.datetime = last_use
-
-    @staticmethod
-    def from_dict(d: dict[str, str]) -> "Rule":
-        match: str = d["match"]
-        description: str = d["description"]
-        args: list[str] = list[str](d["args"])
-        try:
-            last_use: dt.datetime = dt.datetime.fromisoformat(str(d["last_use"]))
-        except KeyError:
-            last_use: dt.datetime = dt.datetime.fromtimestamp(0)
-
-        return Rule(match, description, args, last_use)
+        self.match: str = d["match"]
+        self.description: str = d["description"]
+        self.args: list[str] = list[str](d["args"])
+        if "cwd" in d:
+            self.cwd: str = d["cwd"]
+        if "last_use" in d:
+            self.last_use = dt.datetime.fromisoformat(str(d["last_use"]))
 
     def __repr__(self) -> str:
-        return f"Rule('{self.match}' - '{self.description}' - {self.args})"
+        cwd: str = f" - '{self.cwd}'" if hasattr(self, "cwd") else ""
+        last_use: str = f" - '{self.last_use}'" if hasattr(self, "last_use") else ""
 
-    def as_toml(self) -> str:
-        args = '", "'.join(self.args)
-        args = args.replace("\\", "\\\\")
-        result = f"""
-[[Rules]]
-  match = "{self.match}"
-  description = "{self.description}"
-  args = ["{args}"]
-"""
-        if self.last_use != "":
-            result += f"""  last_use = {self.last_use}
-"""
-        return result
+        return f"Rule('{self.match}' - '{self.description}' - {self.args}{cwd}{last_use})"
 
     def __eq__(self, value: object) -> bool:
         if type(value) is Rule:
@@ -117,7 +97,9 @@ class Rule:
 
     def __lt__(self, value: object) -> bool:
         if type(value) is Rule:
-            return self.last_use < value.last_use
+            a = self.last_use if hasattr(self, "last_use") else dt.datetime.fromtimestamp(0)
+            b = value.last_use if hasattr(value, "last_use") else dt.datetime.fromtimestamp(0)
+            return a < b
         else:
             return False
 
@@ -129,7 +111,11 @@ class Rule:
 
     def execute(self) -> None:
         try:
-            subprocess.Popen(self.args)
+            if hasattr(self, "cwd"):
+                cwd = self.cwd
+            else:
+                cwd = None
+            subprocess.Popen(self.args, cwd=cwd)
             self.last_use = dt.datetime.now()
         except Exception as e:
             msg.showerror("Error opening file", str(e))  # type: ignore

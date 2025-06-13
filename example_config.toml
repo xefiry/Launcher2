@@ -41,3 +41,9 @@ args = ["C:/Program Files/Mozilla Firefox/firefox.exe"]
 match = "GH"
 description = "Open github.com in firefox"
 args = ["C:/Program Files/Mozilla Firefox/firefox.exe", "https://github.com/"]
+
+[[Rule]]
+match = "dummy"
+description = "Rule with CWD"
+args = ["dudmmy.exe"]
+cwd = "C:/Some/Current/Working/Directory/"
