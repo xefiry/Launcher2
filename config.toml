@@ -6,46 +6,38 @@ max_results = 10
 match = "terminal"
 description = "Run terminal"
 args = ["wt"]
-last_use = 1970-01-01T01:00:00
 
 [[Rule]]
 match = "localappdata"
 description = "Open LocalAppData"
 args = ["wt", "pwsh.exe", "-wd", "%localappdata%"]
-last_use = 1970-01-01T01:00:00
 
 [[Rule]]
 match = "vid"
 description = "Open D:/Videos in terminal"
 args = ["wt", "pwsh.exe", "-wd", "D:/Videos/"]
-last_use = 1970-01-01T01:00:00
 
 [[Rule]]
 match = "python"
 description = "Run python"
 args = ["wt", "pwsh.exe", "-Command", "python.exe"]
-last_use = 1970-01-01T01:00:00
 
 [[Rule]]
 match = "explorer"
 description = "Run Explorer"
 args = ["explorer.exe"]
-last_use = 1970-01-01T01:00:00
 
 [[Rule]]
 match = "C"
 description = "Open C:/ in explorer"
 args = ["explorer.exe", "C:\\"]
-last_use = 1970-01-01T01:00:00
 
 [[Rule]]
 match = "firefox"
 description = "Run Firefox"
 args = ["C:/Program Files/Mozilla Firefox/firefox.exe"]
-last_use = 1970-01-01T01:00:00
 
 [[Rule]]
 match = "GH"
 description = "Open github.com in firefox"
 args = ["C:/Program Files/Mozilla Firefox/firefox.exe", "https://github.com/"]
-last_use = 1970-01-01T01:00:00
