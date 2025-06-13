@@ -162,10 +162,14 @@ class UI(tk.Tk):
         self.mainloop()
 
     def execute_rule(self) -> None:
-        try:
-            n: int = self.list.curselection()[0]  # type: ignore
-        except Exception:
+        # get selected element in the list
+        cur: tuple[int] = tuple[int](self.list.curselection())  # type: ignore
+
+        # if there is not only one, do nothing (there can be 0)
+        if len(cur) != 1:
             return
+
+        n: int = cur[0]
 
         self.rules[n].execute()
         self.config.write()
