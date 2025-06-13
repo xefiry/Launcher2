@@ -1,9 +1,10 @@
+import datetime as dt
 import subprocess
-import time
 import tkinter as tk
 from tkinter import messagebox as msg
 from tkinter import ttk
 
+import tomlkit
 import tomllib
 
 CONFIG_FILE = "config.toml"
@@ -39,19 +40,18 @@ class Config:
 
         return result
 
-    def as_toml(self) -> str:
-        result = f"""[Config]
-  search_description = {str(self.search_description).lower()}
-  max_results = {self.max_results}
-"""
-        for r in self.rules:
-            result += r.as_toml()
-
-        return result
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "Config": {
+                "search_description": self.search_description,
+                "max_results": self.max_results,
+            },
+            "Rules": [rule.__dict__ for rule in self.rules],
+        }
 
     def write(self) -> None:
         with open(self.file_path, "w") as f:
-            f.write(self.as_toml())
+            tomlkit.dump(self.as_dict(), f)  # type: ignore
 
     def filter_rules(self, input: str) -> list["Rule"]:
         result: list["Rule"] = []
@@ -69,22 +69,22 @@ class Config:
 
 class Rule:
     def __init__(
-        self, match: str, description: str, args: list[str], last_use: str = ""
+        self, match: str, description: str, args: list[str], last_use: dt.datetime
     ) -> None:
         self.match: str = match
         self.description: str = description
         self.args: list[str] = args
-        self.last_use: str = last_use
+        self.last_use: dt.datetime = last_use
 
     @staticmethod
-    def from_dict(d: dict[str, str | list[str]]) -> "Rule":
-        match: str = str(d["match"])
-        description: str = str(d["description"])
+    def from_dict(d: dict[str, str]) -> "Rule":
+        match: str = d["match"]
+        description: str = d["description"]
         args: list[str] = list[str](d["args"])
         try:
-            last_use: str = str(d["last_use"])
+            last_use: dt.datetime = dt.datetime.fromisoformat(str(d["last_use"]))
         except KeyError:
-            last_use: str = ""
+            last_use: dt.datetime = dt.datetime.fromtimestamp(0)
 
         return Rule(match, description, args, last_use)
 
@@ -130,7 +130,7 @@ class Rule:
     def execute(self) -> None:
         try:
             subprocess.Popen(self.args)
-            self.last_use = time.strftime("%Y-%m-%d %H:%M:%S")
+            self.last_use = dt.datetime.now()
         except Exception as e:
             msg.showerror("Error opening file", str(e))  # type: ignore
             exit(-1)
@@ -202,6 +202,7 @@ class UI(tk.Tk):
 def run():
     try:
         conf = Config(CONFIG_FILE)
+        conf.write()
         ui = UI(conf)
         ui.mainloop()
     except Exception as e:
