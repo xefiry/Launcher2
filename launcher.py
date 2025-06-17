@@ -17,9 +17,6 @@ class Config:
 
         Args:
             file_path (str): The .toml file to use
-
-        ToDo:
-            manage errors due to missing keys
         """
 
         with open(file_path, "rb") as file:
@@ -125,7 +122,7 @@ class Rule:
         try:
             subprocess.Popen(args, cwd=cwd)
         except Exception as e:
-            msg.showerror("Error opening file", str(e))  # type: ignore
+            msg.showerror("Fatal error", str(e))  # type: ignore
             exit(-1)
 
         self.last_use = dt.datetime.now()
@@ -205,8 +202,7 @@ def run():
         ui = UI(conf)
         ui.mainloop()
     except Exception as e:
-        msg.showerror("Error opening file", str(e))  # type: ignore
-        exit(-1)
+        msg.showerror("Fatal error", str(e))  # type: ignore
 
 
 if __name__ == "__main__":
