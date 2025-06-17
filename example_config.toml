@@ -2,6 +2,11 @@
 search_description = false
 max_results = 10
 
+[Variables]
+firefox_exe = "C:/Program Files/Mozilla Firefox/firefox.exe"
+github_url = "https://github.com/"
+recurs_env_var = "%LocalAppData%/Some/Path"
+
 [[Rule]]
 match = "terminal"
 description = "Run terminal"
@@ -35,15 +40,21 @@ args = ["explorer.exe", "C:\\"]
 [[Rule]]
 match = "firefox"
 description = "Run Firefox"
-args = ["C:/Program Files/Mozilla Firefox/firefox.exe"]
+args = ["%firefox_exe%"]
 
 [[Rule]]
 match = "GH"
 description = "Open github.com in firefox"
-args = ["C:/Program Files/Mozilla Firefox/firefox.exe", "https://github.com/"]
+args = ["%firefox_exe%", "%github_url%"]
 
 [[Rule]]
 match = "dummy"
 description = "Rule with CWD"
 args = ["dudmmy.exe"]
 cwd = "C:/Some/Current/Working/Directory/"
+
+[[Rule]]
+match = "dummy2"
+description = "Rule with CWD using a variable"
+args = ["dudmmy.exe"]
+cwd = "%recurs_env_var%"

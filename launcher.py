@@ -17,6 +17,9 @@ class Config:
 
         Args:
             file_path (str): The .toml file to use
+
+        ToDo:
+            better handle missing keys
         """
 
         with open(file_path, "rb") as file:
@@ -26,6 +29,9 @@ class Config:
         self.search_description: bool = data["Config"]["search_description"]
         self.max_results: int = data["Config"]["max_results"]
         self.rules: list[Rule] = []
+
+        if "Variables" in data:
+            self.variables: dict[str, str] = data["Variables"]
 
         for d in data["Rule"]:
             self.rules.append(Rule(d))
@@ -39,13 +45,35 @@ class Config:
         return result
 
     def as_dict(self) -> dict[str, object]:
-        return {
-            "Config": {
-                "search_description": self.search_description,
-                "max_results": self.max_results,
-            },
-            "Rule": [rule.__dict__ for rule in self.rules],
+        result: dict[str, object] = {}
+
+        result["Config"] = {
+            "search_description": self.search_description,
+            "max_results": self.max_results,
         }
+        if hasattr(self, "variables"):
+            result["Variables"] = self.variables
+        result["Rule"] = [rule.__dict__ for rule in self.rules]
+
+        return result
+
+    def parse_variables(self):
+        for key, var in self.variables.items():
+            if type(var) is not str:
+                msg.showwarning(  # type: ignore
+                    "Wrong variable type",
+                    f"Variable {key} is wrong type.\n"
+                    + f"Expected {type('')}, got {str(type(var))}\n"
+                    + "Key ignored.",
+                )
+            elif key in os.environ:
+                msg.showwarning(  # type: ignore
+                    "Wrong variable name",
+                    f"An environment variable named '{key}' already exists.\n"
+                    + "Key ignored.",
+                )
+            else:
+                os.environ[key] = var
 
     def write(self) -> None:
         with open(self.file_path, "w") as f:
@@ -107,17 +135,29 @@ class Rule:
         else:
             return None
 
+    @staticmethod
+    def _process_path(path: str) -> str:
+        result: str = path
+
+        # expand as long as it changes the variable
+        while result != os.path.expandvars(result):
+            result = os.path.expandvars(result)
+
+        result = os.path.normpath(result)
+
+        return result
+
     def execute(self) -> None:
         cwd: str | None
         args: list[str] = []
 
         if hasattr(self, "cwd"):
-            cwd = os.path.normpath(os.path.expandvars(self.cwd))
+            cwd = Rule._process_path(self.cwd)
         else:
             cwd = None
 
         for arg in self.args:
-            args.append(os.path.normpath(os.path.expandvars(arg)))
+            args.append(Rule._process_path(arg))
 
         try:
             subprocess.Popen(args, cwd=cwd)
@@ -198,6 +238,7 @@ class UI(tk.Tk):
 def run():
     try:
         conf = Config(CONFIG_FILE)
+        conf.parse_variables()
         conf.write()
         ui = UI(conf)
         ui.mainloop()
