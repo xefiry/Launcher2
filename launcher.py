@@ -1,12 +1,12 @@
 import datetime as dt
+import os
 import subprocess
 import tkinter as tk
+import tomllib
 from tkinter import messagebox as msg
 from tkinter import ttk
-import os
 
 import tomlkit
-import tomllib
 
 CONFIG_FILE = "config.toml"
 
