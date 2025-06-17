@@ -3,6 +3,7 @@ import subprocess
 import tkinter as tk
 from tkinter import messagebox as msg
 from tkinter import ttk
+import os
 
 import tomlkit
 import tomllib
@@ -110,16 +111,24 @@ class Rule:
             return None
 
     def execute(self) -> None:
+        cwd: str | None
+        args: list[str] = []
+
+        if hasattr(self, "cwd"):
+            cwd = os.path.normpath(os.path.expandvars(self.cwd))
+        else:
+            cwd = None
+
+        for arg in self.args:
+            args.append(os.path.normpath(os.path.expandvars(arg)))
+
         try:
-            if hasattr(self, "cwd"):
-                cwd = self.cwd
-            else:
-                cwd = None
-            subprocess.Popen(self.args, cwd=cwd)
-            self.last_use = dt.datetime.now()
+            subprocess.Popen(args, cwd=cwd)
         except Exception as e:
             msg.showerror("Error opening file", str(e))  # type: ignore
             exit(-1)
+
+        self.last_use = dt.datetime.now()
 
 
 class UI(tk.Tk):
