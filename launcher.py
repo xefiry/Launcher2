@@ -140,9 +140,15 @@ class Rule:
     def _process_path(path: str) -> str:
         result: str = path
 
+        # temporary replace single quotes with something else
+        result = result.replace("'", "###")
+
         # expand as long as it changes the variable
         while result != os.path.expandvars(result):
             result = os.path.expandvars(result)
+
+        # undo replace
+        result = result.replace("###", "'")
 
         result = os.path.normpath(result)
 
@@ -159,6 +165,9 @@ class Rule:
 
         for arg in self.args:
             args.append(Rule._process_path(arg))
+
+        print(f"args = {args}")
+        print(f"cwd  = {cwd}")
 
         try:
             subprocess.Popen(args, cwd=cwd)
