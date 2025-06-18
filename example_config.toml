@@ -6,6 +6,7 @@ max_results = 10
 firefox_exe = "C:/Program Files/Mozilla Firefox/firefox.exe"
 github_url = "https://github.com/"
 recurs_env_var = "%LocalAppData%/Some/Path"
+recurs_env_var2 = "%recurs_env_var%/More"
 
 [[Rule]]
 match = "terminal"
