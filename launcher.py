@@ -32,6 +32,7 @@ class Config:
 
         if "Variables" in data:
             self.variables: dict[str, str] = data["Variables"]
+            self.parse_variables()
 
         for d in data["Rule"]:
             self.rules.append(Rule(d))
@@ -238,7 +239,6 @@ class UI(tk.Tk):
 def run():
     try:
         conf = Config(CONFIG_FILE)
-        conf.parse_variables()
         conf.write()
         ui = UI(conf)
         ui.mainloop()
